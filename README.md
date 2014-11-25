@@ -10,8 +10,8 @@ Installation
 2. Add the extension-configuration to behat.yml.
 
 ```yaml
-    extensions:
-        ResultSubmitter\TestingBot\Extension:
-            key: some_secret_key
-            secret: some_secret
+extensions:
+    ResultSubmitter\TestingBot\Extension:
+        key: some_secret_key
+        secret: some_secret
 ```
