@@ -1,0 +1,8 @@
+services:
+    testingbot_eventhandler:
+        class: ResultSubmitter\TestingBot\EventHandler
+        tags:
+            - { name: event_dispatcher.subscriber }
+        calls:
+            - [ setKey, [%testingbot.key%] ]
+            - [ setSecret, [%testingbot.secret%] ]
