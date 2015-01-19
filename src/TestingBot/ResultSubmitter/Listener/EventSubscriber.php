@@ -4,21 +4,27 @@
  * @since 17.11.14
  */
 
-namespace ResultSubmitter\TestingBot;
+namespace TestingBot\ResultSubmitter\Listener;
 
 use Behat\Behat\Context\Environment\InitializedContextEnvironment;
-use Behat\Behat\Context\Exception\ContextNotFoundException;
 use Behat\Behat\EventDispatcher\Event\AfterScenarioTested;
 use Behat\Behat\EventDispatcher\Event\ScenarioTested;
 use Behat\Mink\Driver\Selenium2Driver;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class EventHandler implements EventSubscriberInterface
+class EventSubscriber implements EventSubscriberInterface
 {
     protected $key;
     protected $secret;
+    /** @var \GuzzleHttp\Client */
+    protected $client;
+
+    public function __construct($key, $secret, $client)
+    {
+        $this->key = $key;
+        $this->secret = $secret;
+        $this->client = $client;
+    }
 
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -42,21 +48,10 @@ class EventHandler implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            ScenarioTested::AFTER => array('submitResultHandler', 0)
-        );
+        return array(ScenarioTested::AFTER => array('submitResultHandler', 0));
     }
 
     public function submitResultHandler(AfterScenarioTested $event)
-    {
-        try {
-            $this->submitEvent($event);
-        } catch (ContextNotFoundException $e) {
-            return;
-        }
-    }
-
-    public function submitEvent(AfterScenarioTested $event)
     {
         $context = $event->getEnvironment();
         if (!$context instanceof InitializedContextEnvironment) {
@@ -74,31 +69,9 @@ class EventHandler implements EventSubscriberInterface
 
         $options = array(
             'auth' => array($this->key, $this->secret),
-            'body' => array(
-                'test' => array('success' => (int)$success)
-            )
+            'body' => array('test' => array('success' => (int)$success))
         );
 
-        $client = new Client();
-        try {
-            $client->put('https://api.testingbot.com/v1/tests/' . $sessionId, $options);
-        }
-        catch (ClientException $e) {}
-    }
-
-    /**
-     * @param string $key
-     */
-    public function setKey($key)
-    {
-        $this->key = $key;
-    }
-
-    /**
-     * @param string $secret
-     */
-    public function setSecret($secret)
-    {
-        $this->secret = $secret;
+        $this->client->put('https://api.testingbot.com/v1/tests/' . $sessionId, $options);
     }
 }

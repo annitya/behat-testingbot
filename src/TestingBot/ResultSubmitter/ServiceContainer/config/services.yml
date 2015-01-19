@@ -1,0 +1,10 @@
+services:
+    testingbot_eventlistener:
+        class: TestingBot\ResultSubmitter\Listener\EventSubscriber
+        tags:
+            - { name: event_dispatcher.subscriber }
+        args: [%testingbot.key%, %testingbot.secret%, %testingot_httpclient%]
+
+    testingbot_httpclient:
+        class: \GuzzleHttp\Client
+        public: false

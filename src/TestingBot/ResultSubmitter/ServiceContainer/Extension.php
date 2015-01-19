@@ -6,7 +6,7 @@
  * @since 14.11.14
  */
 
-namespace ResultSubmitter\TestingBot;
+namespace TestingBot\ResultSubmitter\ServiceContainer;
 
 use Behat\Testwork\ServiceContainer\Extension as ExtensionInterface;
 use Behat\Testwork\ServiceContainer\ExtensionManager;

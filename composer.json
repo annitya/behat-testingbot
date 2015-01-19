@@ -1,0 +1,34 @@
+{
+  "name": "flageolett/testingbot-extension",
+  "type": "behat-extension",
+  "description": "Testingbot-integration for Behat",
+  "keywords": [
+    "testingbot",
+    "behat",
+    "bdd"
+  ],
+  "homepage": "https://github.com/whitefire/behat-testingbot/",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Henning Kvinnesland",
+      "email": "henning.kvinnesland@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.3",
+    "behat/behat": "~3.0,>=3.0.4",
+    "symfony/framework-bundle": "~2.0",
+    "fabpot/goutte": "*"
+  },
+  "require-dev": {
+    "symfony/symfony": "~2.1",
+    "behat/mink-extension": "~2.0@dev",
+    "behat/mink-browserkit-driver": "~1.0",
+    "phpspec/phpspec": "~2.0",
+    "phpunit/phpunit": "~4.0"
+  },
+  "autoload": {
+    "psr-0": {"TestingBot\\ResultSubmitter": "src/"}
+  }
+}
