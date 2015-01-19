@@ -11,7 +11,7 @@ Installation
 
 ```yaml
 extensions:
-    ResultSubmitter\TestingBot\Extension:
+    TestingBot\ResultSubmitter\ServiceContainer\Extension:
         key: some_secret_key
         secret: some_secret
 ```

@@ -10,6 +10,7 @@ use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\EventDispatcher\Event\AfterScenarioTested;
 use Behat\Behat\EventDispatcher\Event\ScenarioTested;
 use Behat\Mink\Driver\Selenium2Driver;
+use Behat\MinkExtension\Context\MinkContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class EventSubscriber implements EventSubscriberInterface
@@ -53,25 +54,38 @@ class EventSubscriber implements EventSubscriberInterface
 
     public function submitResultHandler(AfterScenarioTested $event)
     {
-        $context = $event->getEnvironment();
-        if (!$context instanceof InitializedContextEnvironment) {
+        if (!$sessionId = $this->extractSessionId($event)) {
             return;
         }
-
-        $context = $context->getContext('FeatureContext');
-        $driver = $context->getSession()->getDriver();
-        if (!$driver instanceof Selenium2Driver) {
-            return;
-        }
-
-        $sessionId = $driver->getWebDriverSessionId();
-        $success = $event->getTestResult()->isPassed();
 
         $options = array(
             'auth' => array($this->key, $this->secret),
-            'body' => array('test' => array('success' => (int)$success))
+            'body' => array('test' => array('success' => (int)$event->getTestResult()->isPassed()))
         );
 
         $this->client->put('https://api.testingbot.com/v1/tests/' . $sessionId, $options);
+    }
+
+    protected function extractSessionId(AfterScenarioTested $event)
+    {
+        $environment = $event->getEnvironment();
+        if (!$environment instanceof InitializedContextEnvironment) {
+            return false;
+        }
+
+        foreach ($environment->getContexts() as $context) {
+            if (!$context instanceof MinkContext) {
+                continue;
+            }
+
+            $driver = $context->getSession()->getDriver();
+            if (!$driver instanceof Selenium2Driver) {
+                continue;
+            }
+
+            return $driver->getWebDriverSessionId();
+        }
+
+        return false;
     }
 }

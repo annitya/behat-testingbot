@@ -3,7 +3,7 @@ services:
         class: TestingBot\ResultSubmitter\Listener\EventSubscriber
         tags:
             - { name: event_dispatcher.subscriber }
-        args: [%testingbot.key%, %testingbot.secret%, %testingot_httpclient%]
+        arguments: [%testingbot.key%, %testingbot.secret%, @testingbot_httpclient]
 
     testingbot_httpclient:
         class: \GuzzleHttp\Client
